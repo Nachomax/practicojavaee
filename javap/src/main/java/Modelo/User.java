@@ -9,9 +9,10 @@ import java.util.Date;
  * The persistent class for the "User" database table.
  * 
  */
-@Entity
+//@Entity
+@MappedSuperclass
 @Table(name="\"User\"")
-@NamedQuery(name="User.findAll", query="SELECT u FROM User u")
+//@NamedQuery(name="User.findAll", query="SELECT u FROM User u")
 public class User implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -29,9 +30,18 @@ public class User implements Serializable {
 
 	private String password;
 	
-	private int roleid;
 
 	public User() {	
+	}
+	
+	
+	public User(String username,Date creationdate,String email,String lastname,String name,String password) {
+		this.username = username;
+		this.creationdate = creationdate;
+		this.email = email;
+		this.lastname = lastname;
+		this.name = name;
+		this.password = password;
 	}
 	
 	public String getUsername() {
@@ -82,12 +92,5 @@ public class User implements Serializable {
 		this.password = password;
 	}
 	
-	public int getRole() {
-		return this.roleid;
-	}
-
-	public void setRole(int roleid) {
-		this.roleid = roleid;
-	}
 
 }

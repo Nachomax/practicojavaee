@@ -16,6 +16,7 @@ import javax.ws.rs.core.Response;
 import javax.xml.bind.annotation.XmlRootElement;
 import Manejador.*;
 import Modelo.User;
+import Modelo.*;
 import java.io.IOException;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
@@ -44,57 +45,59 @@ public class MyResource {
     }
     
     
-    //POST PARA PROBAR
     @POST
-	@Path("/alta/{password}/{username}/{name}/{lastname}/{email}/{creationdate}/{roleid}")
+	@Path("/alta/{username}/{creationdate}/{email}/{lastname}/{name}/{password}/{idCliente}/{direccion}/{codigoPostal}")
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-	public Response postAlta(@PathParam("password") String password,@PathParam("username") String username, @PathParam("name") String name,@PathParam("lastname") String lastname,@PathParam("email") String email, @PathParam("creationdate") Date creationdate,@PathParam("roleid") int roleid) 
+	public Response Alta(@PathParam("username") String username,@PathParam("creationdate") Date creationdate, @PathParam("email") String email,@PathParam("lastname") String lastname,@PathParam("name") String name, @PathParam("password") String password, @PathParam("idCliente") int idCliente, @PathParam("direccion") String direccion, @PathParam("codigoPostal") int codigoPostal) 
 	{
 		try {
-			String output = "Usuario"+username+" dado de ALTA CORRECTAMENTE" ;
-			 User usuarionuevo = new User();
-			 usuarionuevo.setName(name);
-			 usuarionuevo.setLastname(lastname);
-			 usuarionuevo.setUsername(username);
-			 usuarionuevo.setPassword(password);
-			 usuarionuevo.setEmail(email);
-			 usuarionuevo.setRole(roleid);
+			 Cliente c = new Cliente();
+			 c.setName(name);
+			 c.setLastname(lastname);
+			 c.setUsername(username);
+			 c.setPassword(password);
+			 c.setEmail(email);
+			 c.setCreationdate(creationdate);
+			 c.setIdCliente(idCliente);
+			 c.setCodigoPostal(codigoPostal);
+			 c.setDireccion(direccion);
+			 
 			 
 			 boolean respuesta = true;
 			 
 			 if(respuesta) {
-				 muser.AltaUser(usuarionuevo);
-				 String outputelse = "Usuario"+usuarionuevo.getName()+" pa ver que onda" ;
+				 muser.AltaCliente(c);
+				 String outputelse = "Cliente"+c.getName()+"dado de alta correctamente";
 			 	return Response.status(200).entity(outputelse).build();
 			 	
 			 }
 			 else {
-				 String outputelse = "Usuario"+username+" ya existe, NO SE PUDO DAR DE ALTA" ;
+				 String outputelse = "Cliente"+c.getName()+"ya existe" ;
 				 return Response.status(200).entity(outputelse).build();
 			 }
 				 
 		}catch(Exception e) {
 			e.printStackTrace();
-			String output = "Usuario"+username+" NO SE PUDO DAR DE ALTA" ;
+			String output = "Usuario"+username+"NO SE PUDO DAR DE ALTA" ;
 			return Response.status(500).entity(output).build();	
 		}
 		
 	}
     
     @GET
-	@Path("/usuario/{password}/{username}")
+	@Path("/usuario/{idCliente}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getUsuario(@PathParam("password") String password,@PathParam("username") String username){
+	public Response getCliente(@PathParam("idCliente") int idCliente){
 		try{
-			 User u = new User();
-			 u = muser.getUser(username, password);
+			 Cliente c = new Cliente();
+			 c = muser.getCliente(idCliente);
 			 boolean respuesta = true;
 			 if (respuesta) {
 				 ObjectMapper mapper = new ObjectMapper();
-				 String json = mapper.writeValueAsString(u);
+				 String json = mapper.writeValueAsString(c);
 				 return Response.status(200).entity(json).build();
 			 }else {
-				 String outputelse = "Datos inválidos";
+				 String outputelse = "Datos invÃ¡lidos";
 				 return Response.status(200).entity(outputelse).build();
 			 }
 			 			
@@ -107,13 +110,13 @@ public class MyResource {
     
     
     @GET
-	@Path("/getUsuarios")
+	@Path("/getClientes")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getUsuarios(){
+	public Response getClientes(){
 		try{
 			
-			List<User> lista = new ArrayList<User>();
-			 lista = muser.getUsuarios();
+			List<Cliente> lista = new ArrayList<Cliente>();
+			 lista = muser.getClientes();
 			
 			 ObjectMapper mapper = new ObjectMapper();
 			 String json = mapper.writeValueAsString(lista);
@@ -125,32 +128,54 @@ public class MyResource {
 		}
 	}
     
+    //andando
+    @GET
+  	@Path("/getAdmins")
+  	@Produces(MediaType.APPLICATION_JSON)
+  	public Response getAdmins(){
+  		try{
+  			
+  			List<Admin> lista = new ArrayList<Admin>();
+  			 lista = muser.getAdmins();
+  			
+  			 ObjectMapper mapper = new ObjectMapper();
+  			 String json = mapper.writeValueAsString(lista);
+  			 return Response.status(200).entity(json).build();
+  			
+  		}catch(Exception e) {
+  			return null;
+  		
+  		}
+  	}
+    
+    
+    
     @PUT
-	@Path("/update/{password}/{username}/{name}/{lastname}/{email}/{creationdate}/{roleid}")
+	@Path("/update/{password}/{username}/{name}/{lastname}/{codigoPostal}/{direccion}")
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-	public Response update(@PathParam("password") String password,@PathParam("username") String username, @PathParam("name") String name,@PathParam("lastname") String lastname,@PathParam("email") String email, @PathParam("creationdate") Date creationdate,@PathParam("roleid") int roleid) {
+	public Response update(@PathParam("password") String password,@PathParam("username") String username, @PathParam("name") String name,@PathParam("lastname") String lastname,@PathParam("codigoPostal") int codigoPostal, @PathParam("direccion") String direccion) {
 		try {
 			
 			
-			User u = new User();
-			u.setCreationdate(creationdate);
-			u.setEmail(email);
-			u.setLastname(lastname);
-			u.setName(name);
-			u.setPassword(password);
-			u.setRole(roleid);
-			u.setUsername(username);
+			Cliente c = new Cliente();
+			c.setPassword(password);
+			c.setUsername(username);
+			c.setLastname(lastname);
+			c.setName(name);
+			c.setCodigoPostal(codigoPostal);
+			c.setDireccion(direccion);
 			
-			String output = "Usuario "+username+" MODIFICADO CORRECTAMENTE" ;
 			
-			muser.Modificacion(u);
+			String output = "Cliente "+name+" MODIFICADO CORRECTAMENTE" ;
+			
+			muser.Modificacion(c);
 			 
 			return Response.status(200).entity(output).build();
 			
 			
 		}catch(Exception e) {
 			e.printStackTrace();
-			String outputelse = "Usuario "+username+"  NO SE PUDO MODIFICAR CORRECTAMENTE" ;
+			String outputelse = "Cliente "+name+"  NO SE PUDO MODIFICAR CORRECTAMENTE" ;
 			return Response.status(500).entity(outputelse).build();
 			
 		}
@@ -158,19 +183,19 @@ public class MyResource {
 
     
     @DELETE
-    @Path("/delete/{usename}")
+    @Path("/delete/{idCliente}")
 	//@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-	public Response delete(@PathParam("usename") String username) {
+	public Response delete(@PathParam("idCliente") int idCliente) {
 		
         
         try 
         {
-        	String output = "Usuario "+username+" dado de BAJA CORRECTAMENTE" ;
-        	boolean respuesta = muser.Baja(username);
+        	String output = "Cliente "+idCliente+" dado de BAJA CORRECTAMENTE" ;
+        	boolean respuesta = muser.Baja(idCliente);
         	if(respuesta)
         		return Response.status(200).entity(output).build();
         	else {
-        		 String outputelse = "Usuario "+username+"  NO SE PUDO DAR DE BAJA" ;
+        		 String outputelse = "Usuario "+idCliente+"  NO SE PUDO DAR DE BAJA" ;
 				 return Response.status(200).entity(outputelse).build();
         	}
         	//return "Usuario Dado de baja correctamente";
@@ -178,16 +203,12 @@ public class MyResource {
         }catch(Exception e) 
         {
         	e.printStackTrace(); 
-        	String output = "Usuario "+username+"  NO SE PUDO DAR DE BAJA" ;
+        	String output = "Cliente "+idCliente+"  NO SE PUDO DAR DE BAJA" ;
 			return Response.status(500).entity(output).build();
         	//return "Error al dar de baja  Usuario";
         }
         
 	}
-	
-
-
-
     
     @GET
 	@Path("/prueba")
